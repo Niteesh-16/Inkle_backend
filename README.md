@@ -1,6 +1,12 @@
 # Inkle Social Activity Feed Backend
 
-Node.js + Express + PostgreSQL backend implementing a social activity feed with roles/permissions and full Postman documentation.
+This is a Node.js + Express + PostgreSQL backend for a small social network style activity feed. It supports users, posts, likes, follows, blocking, and role-based permissions (user/admin/owner). I also included a full Postman collection and a separate API documentation file.
+
+If you want the endpoint-by-endpoint details, including request/response examples, please read:
+
+- [`API_DOCS.md`](./API_DOCS.md)
+
+Below is a short overview of what I built and how to run it.
 
 ## Features
 
@@ -11,7 +17,7 @@ Node.js + Express + PostgreSQL backend implementing a social activity feed with 
 - Social features:
   - Create posts, like/unlike posts, follow/unfollow users.
   - Block users (mutual hiding of posts in feed).
-- Global activity wall:
+- Global activity wall that records actions such as:
   - "ABC made a post" (post created).
   - "DEF followed ABC" (follow).
   - "PQR liked ABC's post" (like).
@@ -24,10 +30,29 @@ Node.js + Express + PostgreSQL backend implementing a social activity feed with 
 
 ## Tech Stack
 
+I kept the stack simple on purpose so the focus is on the API design and permissions:
+
 - Node.js + Express (CommonJS)
 - PostgreSQL (Neon) via `pg`
 - JWT (`jsonwebtoken`)
 - Password hashing (`bcrypt`)
+
+---
+
+## Implementation notes
+
+At a high level, I modelled the core entities as:
+
+- `users`: basic profile + `role` (`USER`/`ADMIN`/`OWNER`).
+- `posts`: authored by a user, soft-deletable with `deleted`, `deleted_by`, `deleted_at`.
+- `likes`: many-to-many between users and posts.
+- `follows`: who follows whom.
+- `blocks`: who has blocked whom (used to filter posts from the feed both ways).
+- `activities`: append-only log that captures human-readable descriptions of actions.
+
+Every time an important action happens (create post, like, follow, admin delete, etc.) I call a small helper in `src/utils/activities.js` to record an activity row. The global activity wall simply reads from this table in reverse chronological order.
+
+Role checks (`USER`/`ADMIN`/`OWNER`) are enforced in middleware (`src/middleware/auth.js`) and in the admin routes. Normal users can manage their own content, while admins/owners can moderate everything. Owners have a couple of extra endpoints to promote/demote admins.
 
 ---
 
