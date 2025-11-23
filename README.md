@@ -32,8 +32,8 @@ Below is a short overview of what I built and how to run it.
 
 The backend is deployed on Render. You can use it directly without running anything locally.
 
-- **Base URL (deployed)**: `https://inkle-backend-le9w.onrender.com`
-- **Health check**: `https://inkle-backend-le9w.onrender.com/health`
+- **Base URL (deployed)**: [https://inkle-backend-le9w.onrender.com](https://inkle-backend-le9w.onrender.com)
+- **Health check**: [https://inkle-backend-le9w.onrender.com/health](https://inkle-backend-le9w.onrender.com/health)
 
 If the deployment is healthy, the health endpoint returns:
 
