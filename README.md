@@ -28,6 +28,30 @@ Below is a short overview of what I built and how to run it.
 
 ---
 
+## Deployed API
+
+The backend is deployed on Render. You can use it directly without running anything locally.
+
+- **Base URL (deployed)**: `https://inkle-backend-le9w.onrender.com`
+- **Health check**: `https://inkle-backend-le9w.onrender.com/health`
+
+If the deployment is healthy, the health endpoint returns:
+
+```json
+{ "status": "ok" }
+```
+
+All other endpoints described in `API_DOCS.md` are available under the same base URL. For example:
+
+- `POST https://inkle-backend-le9w.onrender.com/auth/signup`
+- `POST https://inkle-backend-le9w.onrender.com/auth/login`
+- `GET  https://inkle-backend-le9w.onrender.com/posts`
+- `GET  https://inkle-backend-le9w.onrender.com/activities`
+
+You can call these using the provided Postman collection (by setting `base_url` to the deployed URL) or any HTTP client (`curl`, browser devtools `fetch`, etc.).
+
+---
+
 ## Tech Stack
 
 I kept the stack simple on purpose so the focus is on the API design and permissions:
