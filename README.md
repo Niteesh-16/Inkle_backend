@@ -43,12 +43,106 @@ If the deployment is healthy, the health endpoint returns:
 
 All other endpoints described in `API_DOCS.md` are available under the same base URL. For example:
 
-- `POST https://inkle-backend-le9w.onrender.com/auth/signup`
-- `POST https://inkle-backend-le9w.onrender.com/auth/login`
-- `GET  https://inkle-backend-le9w.onrender.com/posts`
-- `GET  https://inkle-backend-le9w.onrender.com/activities`
+- POST [https://inkle-backend-le9w.onrender.com/auth/signup](https://inkle-backend-le9w.onrender.com/auth/signup)
+- POST [https://inkle-backend-le9w.onrender.com/auth/login](https://inkle-backend-le9w.onrender.com/auth/login)
+- GET  [https://inkle-backend-le9w.onrender.com/posts](https://inkle-backend-le9w.onrender.com/posts)
+- GET  [https://inkle-backend-le9w.onrender.com/activities](https://inkle-backend-le9w.onrender.com/activities)
 
 You can call these using the provided Postman collection (by setting `base_url` to the deployed URL) or any HTTP client (`curl`, browser devtools `fetch`, etc.).
+
+---
+
+## How to call the main endpoints
+
+This is a quick reference for how to talk to the API. Full details and more endpoints are in [`API_DOCS.md`](./API_DOCS.md).
+
+### Auth
+
+- **Signup**
+  - Method/URL: `POST /auth/signup`
+  - Auth: none
+  - JSON body:
+    ```json
+    {
+      "email": "abc@example.com",
+      "password": "Password123!",
+      "display_name": "ABC"
+    }
+    ```
+
+- **Login**
+  - Method/URL: `POST /auth/login`
+  - Auth: none
+  - JSON body:
+    ```json
+    {
+      "email": "abc@example.com",
+      "password": "Password123!"
+    }
+    ```
+  - Response contains a `token` field. For all protected endpoints, send this in the header:
+    - `Authorization: Bearer <token>`
+
+- **Me**
+  - Method/URL: `GET /auth/me`
+  - Auth: `Authorization: Bearer <token>`
+
+### Posts
+
+- **Create post**
+  - Method/URL: `POST /posts`
+  - Auth: `Bearer <token>`
+  - JSON body:
+    ```json
+    { "content": "Hello world!" }
+    ```
+
+- **List posts (feed)**
+  - Method/URL: `GET /posts`
+  - Auth: `Bearer <token>`
+
+- **Delete post**
+  - Method/URL: `DELETE /posts/:id`
+  - Auth: `Bearer <token>`
+  - Rules: user can delete own posts; admins/owners can delete any post.
+
+- **Like / Unlike post**
+  - Like: `POST /posts/:id/like`
+  - Unlike: `DELETE /posts/:id/like`
+  - Auth: `Bearer <token>`
+
+### Social (follow & block)
+
+- **Follow user**
+  - Method/URL: `POST /social/follow/:userId`
+  - Auth: `Bearer <token>`
+
+- **Block user**
+  - Method/URL: `POST /social/block/:userId`
+  - Auth: `Bearer <token>`
+  - Effect: both users stop seeing each others posts in `/posts`.
+
+### Admin / Owner
+
+For these endpoints the callers JWT must have `role` = `ADMIN` or `OWNER` (and some are OWNER-only):
+
+- Promote user to admin (OWNER only): `POST /admin/admins/:userId`
+- Demote admin to user (OWNER only): `DELETE /admin/admins/:userId`
+- Delete user (ADMIN/OWNER): `DELETE /admin/users/:userId`
+- Delete post (ADMIN/OWNER): `DELETE /admin/posts/:postId`
+- Delete like (ADMIN/OWNER): `DELETE /admin/likes/:userId/:postId`
+
+### Activity wall
+
+- **Get global activity feed**
+  - Method/URL: `GET /activities`
+  - Auth: `Bearer <token>`
+  - Shows entries like:
+    - `"ABC made a post"`
+    - `"DEF followed ABC"`
+    - `"PQR liked ABC's post"`
+    - `"User deleted by 'Owner'"`
+    - `"Post deleted by 'Admin'"`
 
 ---
 
